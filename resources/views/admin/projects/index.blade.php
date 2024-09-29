@@ -3,6 +3,15 @@
 @section('content')
     <h1>Elenco progetti</h1>
 
+    <div>
+        <form action="{{ route('admin.projects.index') }}" method="GET">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Cerca per titolo" name="search" value="{{ request('search') }}">
+                <button class="btn btn-outline-secondary" type="submit">Cerca</button>
+            </div>
+        </form>
+    </div>
+
     @if(session('delete'))
         <div class="alert alert-success">
             {{ session('delete') }}
@@ -13,6 +22,7 @@
         <thead>
           <tr>
             <th scope="col"># ID</th>
+            <th scope="col">Immagine</th>
             <th scope="col">Titolo</th>
             <th scope="col">Data</th>
             <th scope="col">Tipologia</th>
@@ -24,6 +34,7 @@
             @foreach ($projects as $project )
                 <tr>
                     <td>{{ $project->id }}</td>
+                    <td><img class="img-fluid thumb" src="{{ asset('storage/' . $project->path_image) }}" alt="{{ $project->image_original_name }}" onerror="this.src="></td>
                     <td>{{ $project->title }}</td>
                     <td>{{ ( $project->created_at )->format('d/m/Y') }}</td>
                     <td>

@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.projects.update', $project) }}" method="post">
+    <form action="{{ route('admin.projects.update', $project) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         {{-- TITOLO --}}
@@ -43,6 +43,15 @@
                 @endforeach
             </div>
         </div>
+        {{-- CARICA IMMAGINE --}}
+        <div class="mb-3">
+            <label for="path_image" class="form-label">Immagine</label>
+            <input type="file" name="path_image" id="path_image" class="form-control" onchange="showImage(event)">
+            @error('path_image')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+            <img src="{{ asset('storage/' . $project->path_image) }}" class="thumb pt-1" id="thumb" onerror="this.src='/img/no-image.png'" >
+        </div>
         {{-- DESCRIZIONE --}}
         <div class="mb-3">
             <label for="content" class="form-label">Descrizione</label>
@@ -53,5 +62,12 @@
         </div>
         <button type="submit" class="btn btn-primary">Aggiorna</button>
     </form>
+
+    <script>
+        function showImage(event){
+            const thumb = document.getElementById('thumb');
+            thumb.src = URL.createObjectURL(event.target.files[0]);
+        }
+    </script>
 
 @endsection

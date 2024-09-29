@@ -9,6 +9,9 @@ use App\Models\Type;
 use App\Functions\Helper;
 use App\Http\Requests\ProjectsRequest;
 use App\Models\Technology;
+use Illuminate\Support\Facades\Storage;
+
+
 
 class ProjectController extends Controller
 {
@@ -17,6 +20,14 @@ class ProjectController extends Controller
      */
     public function index()
     {
+
+        if(isset($_GET['search'])){
+            $search = $_GET['search'];
+            $projects = Project::where('title', 'LIKE', '%' . $search . '%')->orderBy('id', 'desc')->paginate(15);
+            $projects->appends(request()->query());
+            return view('admin.projects.index', compact('projects'));
+        }
+
         $projects = Project::orderBy('id', 'desc')->paginate(15);
 
         return view('admin.projects.index', compact('projects'));
@@ -39,6 +50,19 @@ class ProjectController extends Controller
     {
         $data = $request->all();
         $data['slug'] = Helper::generateSlug($data['title'], Project::class);
+
+        // verifico se viene caricata l'immagine ossia es esiste la chiava path_image
+        if(array_key_exists('path_image', $data)){
+            // se esiste la chiave
+            //salvo l'immagine nello storage
+            $image_path = Storage::put('uploads', $data['path_image']);
+            // ottengo il nome originale dell'immagine
+            $original_name = $request->file('path_image')->getClientOriginalName();
+            // aggiungo i valori a $data
+            $data['path_image'] = $image_path;
+            $data['image_original_name'] = $original_name;
+
+        }
 
         $project = Project::create($data);
 
@@ -78,6 +102,22 @@ class ProjectController extends Controller
             $data['slug'] = Helper::generateSlug($data['title'], Project::class);
         }
 
+        if(array_key_exists('path_image', $data)){
+            // se esiste la chiave
+            // elimino la vecchia immagine se c'è
+            if($project->path_image){
+                Storage::delete($project->path_image);
+            }
+            //salvo l'immagine nello storage
+            $image_path = Storage::put('uploads', $data['path_image']);
+            // ottengo il nome originale dell'immagine
+            $original_name = $request->file('path_image')->getClientOriginalName();
+            // aggiungo i valori a $data
+            $data['path_image'] = $image_path;
+            $data['image_original_name'] = $original_name;
+
+        }
+
         $project->update($data);
 
         if(array_key_exists('technologies', $data)){
@@ -98,6 +138,11 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+
+        if($project->path_image){
+            Storage::delete($project->path_image);
+        }
+
         $project->delete();
 
         return redirect()->route('admin.projects.index')->with('delete', 'Il progetto ' . $project->title . ' è stato eliminato correttamente');
