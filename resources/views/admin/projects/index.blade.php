@@ -21,10 +21,16 @@
     <table class="table">
         <thead>
           <tr>
-            <th scope="col"># ID</th>
+            <th scope="col">
+                <a href="{{ route('admin.projects.index', ['direction' => $direction, 'column' => 'id']) }}">ID</a>
+            </th>
             <th scope="col">Immagine</th>
-            <th scope="col">Titolo</th>
-            <th scope="col">Data</th>
+            <th scope="col">
+                <a href="{{ route('admin.projects.index', ['direction' => $direction, 'column' => 'title']) }}">Titolo</a>
+            </th>
+            <th scope="col">
+                <a href="{{ route('admin.projects.index', ['direction' => $direction, 'column' => 'created_at']) }}">Data</a>
+            </th>
             <th scope="col">Tipologia</th>
             <th scope="col">Tecnologie</th>
             <th scope="col">Azioni</th>
