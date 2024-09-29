@@ -1,0 +1,29 @@
+header, aside{
+    a{
+        text-decoration: none;
+        color: white;
+        &:hover{
+            text-decoration: underline;
+        }
+    }
+}
+li{
+    list-style:  none;
+
+}
+.main-wrapper{
+    height: calc(100vh - 57px);
+    overflow: hidden;
+}
+
+aside{
+    width: 220px;
+    height: 100%;
+}
+.content{
+    overflow: auto;
+    width: calc(100% - 220px);
+}
+.input-edit{
+    border: none;
+}
