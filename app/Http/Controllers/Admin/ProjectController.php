@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Type;
 use App\Functions\Helper;
 use App\Http\Requests\ProjectsRequest;
+use App\Models\Technology;
 
 class ProjectController extends Controller
 {
@@ -27,7 +28,8 @@ class ProjectController extends Controller
     public function create()
     {
         $types = Type::all();
-        return view('admin.projects.create', compact('types'));
+        $technologies = Technology::all();
+        return view('admin.projects.create', compact('types', 'technologies'));
     }
 
     /**
@@ -39,6 +41,10 @@ class ProjectController extends Controller
         $data['slug'] = Helper::generateSlug($data['title'], Project::class);
 
         $project = Project::create($data);
+
+        if(array_key_exists('technologies', $data)){
+            $project->technologies()->attach($data['technologies']);
+        }
 
         return redirect()->route('admin.projects.show', $project);
 
@@ -58,7 +64,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view('admin.projects.edit', compact('project', 'types'));
+        $technologies = Technology::all();
+        return view('admin.projects.edit', compact('project', 'types', 'technologies'));
     }
 
     /**
@@ -72,6 +79,16 @@ class ProjectController extends Controller
         }
 
         $project->update($data);
+
+        if(array_key_exists('technologies', $data)){
+            // ->sync() aggiunge le relazioni mancanti e cancella quelle che non esistono più
+            $project->technologies()->sync($data['technologies']);
+        }
+        else{
+            // se non vengono inviate le tecnologie, devo cancellare tutte le relazioni
+            // ->detach() elimina tutte le relazioni
+            $project->technologies()->detach();
+        }
 
         return redirect()->route('admin.projects.show', $project)->with('message', 'Progetto modificato correttamente');
     }

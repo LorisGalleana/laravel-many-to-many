@@ -16,6 +16,7 @@
             <th scope="col">Titolo</th>
             <th scope="col">Data</th>
             <th scope="col">Tipologia</th>
+            <th scope="col">Tecnologie</th>
             <th scope="col">Azioni</th>
           </tr>
         </thead>
@@ -33,6 +34,15 @@
                         @else
                             -
                         @endif
+                    </td>
+                    <td>
+                        @forelse ($project->technologies as $technology )
+                            <span class="badge text-bg-warning">
+                                    {{  $technology->name}}
+                            </span>
+                        @empty
+                            -
+                        @endforelse
                     </td>
                     <td>
                         <a href="{{ route('admin.projects.show', ['project' => $project->id]) }}" class="btn btn-primary">Dettagli</a>

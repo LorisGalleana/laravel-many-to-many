@@ -32,6 +32,16 @@
                 @endforeach
             </select>
         </div>
+        {{-- TECNOLOGIE --}}
+        <div class="mb-3">
+            <label for="technology" class="form-label">Tecnologie</label>
+            <div class="btn-group" role="group">
+                @foreach ($technologies as $technology)
+                    <input type="checkbox" class="btn-check" id="btncheck{{ $technology->id }}" autocomplete="off" name="technologies[]" value="{{ $technology->id }}" @if (in_array($technology->id, old('technology', []))) checked @endif>
+                    <label class="btn btn-outline-primary" for="btncheck{{ $technology->id }}">{{ $technology->name }}</label>
+                @endforeach
+            </div>
+        </div>
         {{-- DESCRIZIONE --}}
         <div class="mb-3">
             <label for="content" class="form-label">Descrizione</label>

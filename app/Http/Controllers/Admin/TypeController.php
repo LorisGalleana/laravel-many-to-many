@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Type;
 use App\Functions\Helper;
+use App\Http\Requests\TypeRequest;
 
 class TypeController extends Controller
 {
@@ -30,13 +31,23 @@ class TypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TypeRequest $request)
     {
-        $data = $request->all();
-        $data['slug'] = Helper::generateSlug($data['name'], Type::class);
 
-        $types = Type::create($data);
-        return redirect()->route('admin.types.index');
+        $exists = Type::where('name', $request->name)->first();
+
+        if(!$exists){
+            $data = $request->all();
+            $data['slug'] = Helper::generateSlug($data['name'], Type::class);
+
+            $types = Type::create($data);
+            return redirect()->route('admin.types.index')->with('success', 'Tipologia inserita con successo');
+        }
+        else{
+            return redirect()->route('admin.types.index')->with('error', 'Tipologia già presente del database');
+        }
+
+
 
     }
 
@@ -59,7 +70,7 @@ class TypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Type $type)
+    public function update(TypeRequest $request, Type $type)
     {
         $data = $request->all();
         $data['slug'] = Helper::generateSlug($data['name'], Type::class);
